@@ -12,11 +12,17 @@ TEHRAN = ZoneInfo("Asia/Tehran")
 START_MINUTE = 11 * 60   # 11:00
 END_MINUTE = 18 * 60     # 18:00 (شامل)
 
+TITLE = "طلای آبشده سجاد"
+FOOTER_LINES = [
+    "www.sajadgoldshop.ir",
+    "09155001063",
+]
+
 SOURCES = [
     # (برچسب در پیام, آدرس, واحد, تعداد رقم اعشار, تقسیم بر)
-    ("🌍 اونس جهانی", "https://www.tgju.org/profile/ons", "دلار", 2, 1),
-    ("⚖️ مثقال", "https://www.tgju.org/profile/mesghal", "تومان", 0, 10),
-    ("🥇 گرم ۱۸ عیار", "https://www.tgju.org/profile/geram18", "تومان", 0, 10),
+    ("اونس جهانی", "https://www.tgju.org/profile/ons", "دلار", 2, 1),
+    ("مثقال", "https://www.tgju.org/profile/mesghal", "تومان", 0, 10),
+    ("گرم ۱۸ عیار", "https://www.tgju.org/profile/geram18", "تومان", 0, 10),
 ]
 
 HEADERS = {
@@ -106,9 +112,11 @@ def main():
         print("[خطا] هر سه قیمت شکست خورد. پیامی ارسال نشد.")
         return 1
 
-    lines = ["📊 قیمت طلا", ""]
+    lines = [TITLE, ""]
     for (label, url, unit, decimals, divisor), value in zip(SOURCES, values):
         lines.append(format_line(label, value, unit, decimals))
+    lines.append("")
+    lines.extend(FOOTER_LINES)
     text = "\n".join(lines)
 
     print("متن پیام:\n" + text)
