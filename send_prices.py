@@ -1,3 +1,4 @@
+import html
 import json
 import os
 import re
@@ -13,10 +14,9 @@ START_MINUTE = 11 * 60   # 11:00
 END_MINUTE = 18 * 60     # 18:00 (شامل)
 
 TITLE = "طلای آبشده سجاد"
-FOOTER_LINES = [
-    "www.sajadgoldshop.ir",
-    "09155001063",
-]
+WEBSITE = "www.sajadgoldshop.ir"
+PHONE = "09155001063"
+SEPARATOR = "━━━━━━━━━━━━"
 
 SOURCES = [
     # (برچسب در پیام, آدرس, واحد, تعداد رقم اعشار, تقسیم بر)
@@ -41,8 +41,8 @@ def fetch_price(url):
     try:
         req = urllib.request.Request(url, headers=HEADERS)
         with urllib.request.urlopen(req, timeout=30) as resp:
-            html = resp.read().decode("utf-8", errors="replace")
-        match = PRICE_PATTERN.search(html)
+            page = resp.read().decode("utf-8", errors="replace")
+        match = PRICE_PATTERN.search(page)
         if not match:
             print(f"[خطا] قیمت در صفحه پیدا نشد: {url}")
             return None
@@ -64,7 +64,12 @@ def format_line(label, value, unit, decimals):
 
 def send_message(token, chat_id, text):
     api_url = f"https://api.telegram.org/bot{token}/sendMessage"
-    data = urllib.parse.urlencode({"chat_id": chat_id, "text": text}).encode("utf-8")
+    data = urllib.parse.urlencode({
+        "chat_id": chat_id,
+        "text": text,
+        "parse_mode": "HTML",
+        "disable_web_page_preview": "true",
+    }).encode("utf-8")
     try:
         with urllib.request.urlopen(api_url, data=data, timeout=30) as resp:
             body = json.loads(resp.read().decode("utf-8"))
@@ -112,11 +117,12 @@ def main():
         print("[خطا] هر سه قیمت شکست خورد. پیامی ارسال نشد.")
         return 1
 
-    lines = [TITLE, ""]
+    lines = [f"<b>{html.escape(TITLE)}</b>", SEPARATOR]
     for (label, url, unit, decimals, divisor), value in zip(SOURCES, values):
-        lines.append(format_line(label, value, unit, decimals))
-    lines.append("")
-    lines.extend(FOOTER_LINES)
+        lines.append(html.escape(format_line(label, value, unit, decimals)))
+    lines.append(SEPARATOR)
+    lines.append(html.escape(WEBSITE))
+    lines.append(f"<b>{html.escape(PHONE)}</b>")
     text = "\n".join(lines)
 
     print("متن پیام:\n" + text)
