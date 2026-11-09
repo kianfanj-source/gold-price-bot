@@ -2,6 +2,7 @@ import json
 import os
 import re
 import sys
+import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import datetime
@@ -94,7 +95,7 @@ def main():
         print("[خطا] BOT_TOKEN یا CHAT_ID در Secrets تنظیم نشده است.")
         return 1
 
-       values = []
+    values = []
     for label, url, unit, decimals, divisor in SOURCES:
         price = fetch_price(url)
         if price is not None:
@@ -109,6 +110,7 @@ def main():
     for (label, url, unit, decimals, divisor), value in zip(SOURCES, values):
         lines.append(format_line(label, value, unit, decimals))
     text = "\n".join(lines)
+
     print("متن پیام:\n" + text)
 
     if send_message(token, chat_id, text):
