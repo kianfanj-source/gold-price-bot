@@ -12,10 +12,10 @@ START_MINUTE = 11 * 60   # 11:00
 END_MINUTE = 18 * 60     # 18:00 (شامل)
 
 SOURCES = [
-    # (برچسب در پیام, آدرس, واحد, تعداد رقم اعشار)
-    ("🌍 اونس جهانی", "https://www.tgju.org/profile/ons", "دلار", 2),
-    ("⚖️ مثقال", "https://www.tgju.org/profile/mesghal", "ریال", 0),
-    ("🥇 گرم ۱۸ عیار", "https://www.tgju.org/profile/geram18", "ریال", 0),
+    # (برچسب در پیام, آدرس, واحد, تعداد رقم اعشار, تقسیم بر)
+    ("🌍 اونس جهانی", "https://www.tgju.org/profile/ons", "دلار", 2, 1),
+    ("⚖️ مثقال", "https://www.tgju.org/profile/mesghal", "تومان", 0, 10),
+    ("🥇 گرم ۱۸ عیار", "https://www.tgju.org/profile/geram18", "تومان", 0, 10),
 ]
 
 HEADERS = {
@@ -94,21 +94,21 @@ def main():
         print("[خطا] BOT_TOKEN یا CHAT_ID در Secrets تنظیم نشده است.")
         return 1
 
-    values = []
-    for label, url, unit, decimals in SOURCES:
-        values.append(fetch_price(url))
+       values = []
+    for label, url, unit, decimals, divisor in SOURCES:
+        price = fetch_price(url)
+        if price is not None:
+            price = price / divisor
+        values.append(price)
 
     if all(v is None for v in values):
         print("[خطا] هر سه قیمت شکست خورد. پیامی ارسال نشد.")
         return 1
 
     lines = ["📊 قیمت طلا", ""]
-    for (label, url, unit, decimals), value in zip(SOURCES, values):
+    for (label, url, unit, decimals, divisor), value in zip(SOURCES, values):
         lines.append(format_line(label, value, unit, decimals))
-    lines.append("")
-    lines.append(f"🕐 ساعت ارسال (تهران): {now:%H:%M}")
     text = "\n".join(lines)
-
     print("متن پیام:\n" + text)
 
     if send_message(token, chat_id, text):
