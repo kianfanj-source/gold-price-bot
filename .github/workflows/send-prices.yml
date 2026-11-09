@@ -1,0 +1,26 @@
+name: Send gold prices
+
+on:
+  schedule:
+    - cron: "*/5 7-14 * * *"
+  workflow_dispatch:
+    inputs:
+      force_send:
+        description: "برای تست: کنترل ساعت دور زده شود؟ (1 = بله)"
+        required: false
+        default: "0"
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Send prices
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+          FORCE_SEND: ${{ github.event.inputs.force_send }}
+        run: python send_prices.py
