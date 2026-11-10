@@ -10,8 +10,8 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 TEHRAN = ZoneInfo("Asia/Tehran")
-START_MINUTE = 9 * 60   # 9:00
-END_MINUTE = 21 * 60     # 21:00 (شامل)
+START_MINUTE = 9 * 60
+END_MINUTE = 21 * 60
 
 TITLE = "طلای آبشده سجاد"
 WEBSITE = "www.sajadgoldshop.ir"
