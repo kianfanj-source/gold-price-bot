@@ -94,8 +94,8 @@ def main():
     print(f"ساعت تهران: {now:%Y-%m-%d %H:%M}")
 
     if not force and not (START_MINUTE <= minute_of_day <= END_MINUTE):
-        print("بیرون از بازه ۱۱:۰۰ تا ۱۸:۰۰ است. ارسال نمی‌شود.")
-        return 0
+print("بیرون از بازه ۰۹:۰۰ تا ۲۱:۰۰ است. ارسال نمی‌شود.")  
+return 0
 
     if force:
         print("حالت تست: کنترل ساعت دور زده شد.")
